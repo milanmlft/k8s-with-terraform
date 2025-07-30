@@ -6,23 +6,23 @@ resource "helm_release" "kubernetes_dashboard" {
   depends_on = [kubernetes_namespace.example]
   namespace  = kubernetes_namespace.example.metadata[0].name
 
-  set {
+  set = [{
     name  = "protocolHttp"
     value = "true"
-  }
-
-  set {
-    name  = "enableInsecureLogin"
-    value = "true"
-  }
-  set {
-    name  = "rbac.clusterReadOnlyRole"
-    value = "true"
-  }
-  set {
-    name  = "metricsScraper.enabled"
-    value = "true"
-  }
+    },
+    {
+      name  = "enableInsecureLogin"
+      value = "true"
+    },
+    {
+      name  = "rbac.clusterReadOnlyRole"
+      value = "true"
+    },
+    {
+      name  = "metricsScraper.enabled"
+      value = "true"
+    }
+  ]
 
   # Wait for the deployment to be ready
   wait = true
@@ -39,14 +39,16 @@ resource "helm_release" "metrics_server" {
 
   # Recent updates to the Metrics Server do not work with self-signed certificates by default.
   # Since Docker For Desktop uses such certificates, you’ll need to allow insecure TLS
-  set {
-    name  = "apiService.create"
-    value = "true"
-  }
-  set {
-    name  = "args"
-    value = "{--kubelet-insecure-tls=true}"
-  }
+  set = [
+    {
+      name  = "apiService.create"
+      value = "true"
+    },
+    {
+      name  = "args"
+      value = "{--kubelet-insecure-tls=true}"
+    }
+  ]
 
   # Wait for the release to be deployed
   wait = true
